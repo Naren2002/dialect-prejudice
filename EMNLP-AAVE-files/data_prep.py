@@ -8,7 +8,7 @@ with open('./aave_samples.txt', 'r') as aae:
         aae_lines = aae.readlines()
         sae_lines = sae.readlines()
 
-        with open('../data/pairs/twitter_dataset.txt', 'w') as res:
+        with open('../data/pairs/groenwold.txt', 'w') as res:
             
             assert len(aae_lines) == len(sae_lines)
             for i in range(len(aae_lines)):

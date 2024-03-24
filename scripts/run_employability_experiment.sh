@@ -19,8 +19,8 @@ do
     --variable $variable \
     --attribute occupations
 
-    python3.10 -u ../probing/mgp_gpt4.py \
-    --model gpt-4-0613 \
-    --variable $variable \
-    --attribute occupations
+    # python3.10 -u ../probing/mgp_gpt4.py \
+    # --model gpt-4-0613 \
+    # --variable $variable \
+    # --attribute occupations
 done

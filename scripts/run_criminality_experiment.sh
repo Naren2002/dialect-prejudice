@@ -21,11 +21,11 @@ do
     --attribute penalty \
     --calibrate
 
-    python3.10 -u ../probing/mgp_gpt4.py \
-    --model gpt-4-0613 \
-    --variable $variable \
-    --attribute penalty \
-    --calibrate
+    # python3.10 -u ../probing/mgp_gpt4.py \
+    # --model gpt-4-0613 \
+    # --variable $variable \
+    # --attribute penalty \
+    # --calibrate
 done
 
 for variable in groenwold blodgett
