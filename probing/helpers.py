@@ -12,7 +12,7 @@ from transformers import (
     T5ForConditionalGeneration,
     T5Tokenizer
 )
-
+import time
 import prompting
 
 # Define path to attribute lists
@@ -35,7 +35,8 @@ T5_MODELS = ["t5-small", "t5-base", "t5-large", "t5-3b"]
 OPENAI_NAMES = {
     "davinci": "gpt3-davinci",
     "gpt-4-0613": "gpt4",
-    "text-davinci-003": "gpt3"
+    "text-davinci-003": "gpt3",
+    "gpt-3.5-turbo": "gpt3"
 }
 
 
@@ -90,6 +91,22 @@ def load_prompts(model_name, attribute, variable):
             prompts = prompting.TRAIT_PROMPTS
         elif attribute == "occupations":
             prompts = prompting.OCCUPATION_PROMPTS
+        elif attribute == "occupations_mini":
+            prompts = prompting.OCCUPATION_MINI_PROMPTS
+        elif attribute == "occupations_mini_ultra":
+            prompts = prompting.OCCUPATION_ULTRA_MINI_PROMPTS
+        elif attribute == "occupations_mini_1":
+            prompts = prompting.OCCUPATION_PROMPT_1
+        elif attribute == "occupations_mini_2":
+            prompts = prompting.OCCUPATION_PROMPT_2
+        elif attribute == "occupations_mini_3":
+            prompts = prompting.OCCUPATION_PROMPT_3
+        elif attribute == "occupations_mini_4":
+            prompts = prompting.OCCUPATION_PROMPT_3
+        elif attribute == "occupations_mini_5":
+            prompts = prompting.OCCUPATION_PROMPT_3
+        elif attribute == "occupations_mini_6":
+            prompts = prompting.OCCUPATION_PROMPT_3
         elif attribute == "penalty":
             prompts = prompting.PENALTY_PROMPTS
         else:
@@ -188,6 +205,17 @@ def get_attribute_probs_gpt3(prompt, attributes, model, attribute_name):
         # Skip cases where article does not match occupation
         if attribute_name == "occupations" and not is_match(prompt, attribute):
             continue
+        if attribute_name == "occupations_mini" and not is_match(prompt, attribute):
+            continue
+        if attribute_name == "occupations_mini_ultra" and not is_match(prompt, attribute):
+            continue
+        if attribute_name == "occupations_mini_1" and not is_match(prompt, attribute):
+            continue
+        if attribute_name == "occupations_mini_2" and not is_match(prompt, attribute):
+            continue
+        if attribute_name == "occupations_mini_3" and not is_match(prompt, attribute):
+            continue
+
         request_result = None
         while request_result is None:
             try:
@@ -195,9 +223,12 @@ def get_attribute_probs_gpt3(prompt, attributes, model, attribute_name):
                     engine=model, 
                     prompt=prompt.format(attribute), 
                     max_tokens=0,
-                    logprobs=1,
-                    echo=True
+                    logprobs=1
+                    # echo=True
                 )
+
+                # Avoids rate limits
+                # time.sleep(20)
             except openai.error.APIError:
                 print(f"API error")
         probs_attribute.append(
@@ -222,6 +253,9 @@ def get_attribute_probs_gpt4(prompt, attributes, model):
                 logit_bias={a: 100 for a in attributes}  # Filter attributes
 
             )
+            # print(request_result)
+            # Avoids rate limits
+            # time.sleep(20)
         except openai.error.APIError:
             print(f"API error")
     logprobs = request_result["choices"][0].logprobs["content"][0].top_logprobs  # Retrieve logprobs
