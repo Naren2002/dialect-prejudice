@@ -96,6 +96,7 @@ PRETTY_MODELS = (
 # Define variable groups
 UNPOOLED_VARIABLES = [
     "groenwold", 
+    "groenwold_mini", 
     "g_dropping", 
     "aint", 
     "habitual", 
@@ -106,7 +107,7 @@ UNPOOLED_VARIABLES = [
     "finna",
     "race"
 ]
-POOLED_VARIABLES = ["blodgett"]
+POOLED_VARIABLES = ["blodgett", "unmatched_pairs_mini"]
 
 
 def model2model_size(model):
@@ -222,6 +223,7 @@ def results2df(
     variable, 
     match=False
 ):
+    
     if model == "gpt4":
         return results2df_gpt4(
             prompt_results, attributes, variable, match
@@ -230,6 +232,7 @@ def results2df(
         logprob = True
     else:
         logprob = False
+
     if variable in UNPOOLED_VARIABLES:
         results_df = results2df_unpooled(
             prompt_results, 
@@ -263,15 +266,27 @@ def results2df_unpooled(
 ):
     ratio_list = []
     for prompt, result_list in prompt_results.items():
+        print(prompt)
         if match:
             attributes_prompt = [
                 a for a in attributes if is_match(prompt, a)
             ]
         else:
             attributes_prompt = attributes
+        # print(attributes_prompt)
+        try:
+            attributes_prompt.remove('legislator')
+        except:
+            # print('error while trying to remove legislator')
+            pass
+        print(attributes_prompt)
+
         for a_idx in range(len(attributes_prompt)):  # Loop over attributes
+            print(a_idx)
             for i in range(0, len(result_list), 2):
                 if logprob:
+                    print(result_list[i][3])
+                    print(result_list[i][3][a_idx])
                     prob_aave = np.exp(result_list[i][3][a_idx])
                     prob_sae = np.exp(result_list[i+1][3][a_idx])
                 else:
@@ -649,13 +664,14 @@ def load_results(
     attribute_name, 
     calibrate=False
 ):
-    if model == "gpt3" or model == "gpt3-davinci":
-        return load_results_distributed(
-            model=model, 
-            variable=variable, 
-            attribute_name=attribute_name, 
-            calibrate=calibrate
-        )
+    # if model == "gpt3" or model == "gpt3-davinci":
+    #     return load_results_distributed(
+    #         model=model, 
+    #         variable=variable, 
+    #         attribute_name=attribute_name, 
+    #         calibrate=calibrate
+    #     )
+    
     if calibrate:
         with open(f"{PROBS_PATH}{os.path.sep}{model}_{variable}_{attribute_name}_cal.p", "rb") as f:
             prompt_results = pickle.load(f)
